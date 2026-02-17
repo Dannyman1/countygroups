@@ -1,0 +1,128 @@
+"use client";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import SafeImage from '@/components/SafeImage'
+import fallbackImages from '@/data/fallbackImages'
+
+const homes = [
+  {
+    id: 1,
+    title: "Modern 3 Bedroom Duplex",
+    location: "Lekki, Lagos",
+    price: "₦45,000,000",
+    image:
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    tag: "Best Value",
+  },
+  {
+    id: 2,
+    title: "Luxury Waterfront Apartment",
+    location: "Ikoyi, Lagos",
+    price: "₦120,000,000",
+    image:
+      "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6",
+    tag: "Hot Deal",
+  },
+  {
+    id: 3,
+    title: "4 Bedroom Family Home",
+    location: "Abuja",
+    price: "₦65,000,000",
+    image:
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+    tag: "New Listing",
+  },
+  {
+    id: 4,
+    title: "Contemporary Smart Home",
+    location: "Ajah, Lagos",
+    price: "₦38,000,000",
+    image:
+      "https://images.unsplash.com/photo-1572120360610-d971b9d7767c",
+    tag: "Affordable",
+  },
+];
+
+export default function TopHomes() {
+  return (
+    <section className="w-full bg-white py-16">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-semibold text-stone-950">
+              Top Homes Right Now
+            </h2>
+            <p className="mt-2 text-stone-600 max-w-md">
+              Hand-picked homes offering the best value across top locations.
+            </p>
+          </div>
+
+          <button className="hidden md:inline-flex text-orange-600 font-medium hover:underline">
+            View all
+          </button>
+        </div>
+
+        {/* Swiper */}
+        <Swiper
+          modules={[Navigation]}
+          navigation
+          spaceBetween={24}
+          slidesPerView={1.1}
+          breakpoints={{
+            640: { slidesPerView: 2.2 },
+            1024: { slidesPerView: 3.2 },
+          }}
+          className="pb-4"
+        >
+          {homes.map((home, idx) => (
+            <SwiperSlide key={home.id}>
+              <div className="group rounded-2xl border border-stone-200 overflow-hidden hover:shadow-xl transition bg-white">
+                {/* Image */}
+                <div className="relative h-56 overflow-hidden">
+                  {(() => {
+                    const start = fallbackImages && fallbackImages.length ? idx % fallbackImages.length : 0;
+                    const rotated = fallbackImages ? [...fallbackImages.slice(start), ...fallbackImages.slice(0, start)] : [];
+                    const candidates = home?.image ? [home.image, ...rotated] : rotated;
+                    return (
+                      <SafeImage srcList={candidates} alt={home.title || home.name} fill={true} className="h-full w-full object-cover group-hover:scale-105 transition duration-500" priority={idx === 0} />
+                    )
+                  })()}
+
+                  {/* Tag */}
+                  <span className="absolute top-4 left-4 bg-orange-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                    {home.tag}
+                  </span>
+                </div>
+
+                {/* Content */}
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-stone-950 leading-snug">
+                    {home.title}
+                  </h3>
+
+                  <p className="mt-1 text-sm text-stone-600">
+                    {home.location}
+                  </p>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-orange-600 font-bold text-lg">
+                      {home.price}
+                    </span>
+
+                    <button className="text-sm font-medium text-stone-950 hover:text-orange-600 transition">
+                      Compare →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+    </section>
+  );
+}
