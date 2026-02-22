@@ -1,22 +1,32 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Search } from "lucide-react"
-import homes from '@/data/homes'
 
 export default function SearchBar() {
   const [q, setQ] = useState("")
   const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
+  const debounceRef = useRef(null)
 
-  const suggestions = q.trim().length >= 2
-    ? homes.filter(h => {
-        const term = q.trim().toLowerCase()
-        return (h.state && h.state.toLowerCase().includes(term)) || (h.name && h.name.toLowerCase().includes(term)) || (h.address && h.address.toLowerCase().includes(term))
-      }).slice(0,5)
-    : []
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (q.trim().length < 2) {
+      setSuggestions([])
+      return
+    }
+
+    debounceRef.current = setTimeout(() => {
+      fetch(`/api/homes?search=${encodeURIComponent(q.trim())}&count=5`)
+        .then(r => r.json())
+        .then(data => setSuggestions(data || [])).catch(()=>setSuggestions([]))
+    }, 250)
+
+    return () => clearTimeout(debounceRef.current)
+  }, [q])
 
   function submit(e) {
     e.preventDefault()
@@ -65,10 +75,10 @@ export default function SearchBar() {
       </div>
 
       <div className="mt-3 flex gap-2 justify-center">
-        <button type="button" onClick={() => setQ("New York")} className="px-3 py-1.5 bg-white/10 text-white rounded-full text-sm hover:bg-orange-100/30">New York</button>
-        <button type="button" onClick={() => setQ("Los Angeles")} className="px-3 py-1.5 bg-white/10 text-white rounded-full text-sm hover:bg-orange-100/30">Los Angeles</button>
-        <button type="button" onClick={() => setQ("Miami")} className="px-3 py-1.5 bg-white/10 text-white rounded-full text-sm hover:bg-orange-100/30">Miami</button>
-        <button type="button" onClick={() => setQ("Chicago")} className="px-3 py-1.5 bg-white/10 text-white rounded-full text-sm hover:bg-orange-100/30">Chicago</button>
+        <button type="button" onClick={() => { setQ("New York"); setOpen(true) }} className="px-3 py-1.5 bg-white/10 text-white rounded-full text-sm hover:bg-orange-100/30">New York</button>
+        <button type="button" onClick={() => { setQ("Los Angeles"); setOpen(true) }} className="px-3 py-1.5 bg-white/10 text-white rounded-full text-sm hover:bg-orange-100/30">Los Angeles</button>
+        <button type="button" onClick={() => { setQ("Miami"); setOpen(true) }} className="px-3 py-1.5 bg-white/10 text-white rounded-full text-sm hover:bg-orange-100/30">Miami</button>
+        <button type="button" onClick={() => { setQ("Chicago"); setOpen(true) }} className="px-3 py-1.5 bg-white/10 text-white rounded-full text-sm hover:bg-orange-100/30">Chicago</button>
       </div>
     </motion.form>
   )

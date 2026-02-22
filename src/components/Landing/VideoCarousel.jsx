@@ -1,14 +1,26 @@
 "use client"
 import React, {useState, useEffect, useRef} from 'react'
-import homes from '@/data/homes'
 
 export default function VideoCarousel(){
-  const videos = homes.filter(h => h.video && h.video.toString().trim() !== '').slice(0,6)
+  const [videos, setVideos] = useState([])
   const [idx, setIdx] = useState(0)
   const intervalRef = useRef(null)
   const vidRef = useRef(null)
 
   useEffect(() => {
+    let mounted = true
+    fetch('/api/homes?count=10')
+      .then(r => r.json())
+      .then(data => {
+        if (!mounted) return
+        const vids = (data || []).filter(h => h.video && String(h.video).trim() !== '').slice(0,6)
+        setVideos(vids)
+      }).catch(()=>{})
+    return () => { mounted = false }
+  }, [])
+
+  useEffect(() => {
+    if (!videos.length) return
     intervalRef.current = setInterval(() => {
       setIdx(i => (i + 1) % videos.length)
     }, 6000)

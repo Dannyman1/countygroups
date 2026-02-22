@@ -1,5 +1,4 @@
 import React from 'react'
-import homes from '@/data/homes'
 import VideoCarousel from './VideoCarousel'
 
 export default function FeaturedListings(){

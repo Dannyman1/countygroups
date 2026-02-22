@@ -1,11 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { usePathname } from 'next/navigation'
 import { Menu, X, Heart, User, Instagram, Facebook, Linkedin } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 
 export default function Navbar() {
+  const pathname = usePathname()
+  if (pathname && pathname.startsWith('/admin')) return null
   const [open, setOpen] = useState(false)
 
   return (
