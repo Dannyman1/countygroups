@@ -36,17 +36,7 @@ export default function LoginPage() {
     }
   }
 
-  async function handleMagicLink(e) {
-    e.preventDefault()
-    setLoading(true)
-    setMessage("")
-
-    const { data, error } = await supabase.auth.signInWithOtp({ email })
-
-    setLoading(false)
-    if (error) return setMessage(error.message)
-    setMessage('Magic link sent — check your email.')
-  }
+  // Magic link removed; password reset handled via separate page
 
   return (
     <div className="max-w-md mx-auto px-6 py-12">
@@ -74,7 +64,7 @@ export default function LoginPage() {
           />
         </label>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <button
             type="submit"
             disabled={loading}
@@ -82,14 +72,7 @@ export default function LoginPage() {
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
-
-          <button
-            onClick={handleMagicLink}
-            disabled={loading}
-            className="px-4 py-2 border rounded text-white/90"
-          >
-            {loading ? 'Sending...' : 'Send magic link'}
-          </button>
+          <a href="/reset-password" className="ml-3 text-sm text-white/80 hover:underline">Forgot password?</a>
         </div>
       </form>
 
